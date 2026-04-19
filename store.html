@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="متجر إلكتروني - تصفّح واطلب بسهولة عبر واتساب">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="UP2U Store - متجر واتساب">
+    <meta property="og:description" content="تصفّح المنتجات واطلب مباشرة عبر واتساب">
+    <title>UP2U Store</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="store-body">
+
+    <!-- بانر عدم الاتصال -->
+    <div class="offline-banner" id="offlineBanner">⚠️ لا يوجد اتصال بالإنترنت</div>
+
+
+    <!-- حالة التحميل -->
+    <div id="loadingState" class="loading-state"
+        style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;">
+            <div class="spinner"></div>
+            <p style="color:var(--text-light);margin-top:16px;">جاري تحميل المتجر...</p>
+        </div>
+    </div>
+
+    <!-- المتجر -->
+    <div id="storeContent" style="display:none;">
+        <header class="store-header">
+            <div class="store-header-inner">
+                <div class="store-brand">
+                    <div class="store-logo" id="storeLogo">🛒</div>
+                    <div>
+                        <h1 class="store-title" id="storeTitle">UP2U Store</h1>
+                        <p class="store-desc" id="storeDesc"></p>
+                    </div>
+                </div>
+                <div class="store-info-badges" id="storeInfoBadges"></div>
+            </div>
+        </header>
+        <div class="store-toolbar">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="🔍 ابحث عن منتج..."></div>
+            <div class="category-filter" id="categoryFilter"></div>
+        </div>
+        <main class="store-products" id="productsContainer"></main>
+
+        <!-- التقييمات -->
+        <section class="store-reviews-section" id="reviewsSection" style="display:none;">
+            <div class="section-header">
+                <h2>⭐ تقييمات العملاء</h2>
+                <div class="review-summary" id="reviewSummary"></div>
+            </div>
+            <div id="reviewsDisplay"></div>
+            <div class="review-form card" id="reviewForm">
+                <h3 style="margin-bottom:16px;color:var(--text-white);">✏️ أضف تقييمك</h3>
+                <div class="form-group"><label>المنتج *</label><select id="reviewProduct">
+                        <option value="">اختر المنتج</option>
+                    </select></div>
+                <div class="form-group"><label>اسمك *</label><input type="text" id="reviewName"
+                        placeholder="اسمك الكريم" maxlength="50"></div>
+                <div class="form-group"><label>التقييم *</label>
+                    <div class="star-input" id="starInput"><span class="star-btn" data-v="1">☆</span><span
+                            class="star-btn" data-v="2">☆</span><span class="star-btn" data-v="3">☆</span><span
+                            class="star-btn" data-v="4">☆</span><span class="star-btn" data-v="5">☆</span></div>
+                </div>
+                <div class="form-group"><label>رأيك *</label><textarea id="reviewText" placeholder="شاركنا تجربتك..."
+                        maxlength="300"></textarea></div>
+                <button class="btn-save" onclick="submitReview()">📤 إرسال التقييم</button>
+            </div>
+        </section>
+
+        <!-- علامة متجري -->
+        <div id="poweredBadge"
+            style="display:none;text-align:center;padding:24px;color:var(--text-light);font-size:0.8rem;border-top:1px solid var(--border-dark);margin-top:40px;">
+            مدعوم بواسطة <a href="/" style="color:var(--primary);text-decoration:none;font-weight:600;">UP2U Store</a> -
+            أنشئ
+            متجرك المجاني
+        </div>
+    </div>
+
+    <!-- السلة -->
+    <div class="cart-badge" id="cartBadge" onclick="toggleCart()" style="display:none;">🛒 <span id="cartCount">0</span>
+    </div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-drawer-header">
+            <h3>🛒 سلة المشتريات</h3><button class="modal-close" onclick="toggleCart()">✕</button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-coupon" id="couponSection" style="display:none;"><input type="text" id="couponInput"
+                placeholder="كود الخصم" style="text-transform:uppercase;direction:ltr;"><button class="btn-save"
+                onclick="applyCoupon()" style="padding:10px 20px;">تطبيق</button></div>
+        <div id="couponStatus"></div>
+        <div class="cart-total"><span>الإجمالي:</span><span id="cartTotal">0</span></div>
+        <button class="btn-save cart-checkout-btn" id="checkoutBtn" onclick="checkout()"
+            style="width:100%;padding:16px;font-size:1.1rem;display:none;">📱 إتمام الطلب عبر واتساب</button>
+    </div>
+
+    <!-- زر واتساب العائم -->
+    <a href="#" class="whatsapp-fab" id="whatsappFab" target="_blank" rel="noopener" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+        </svg>
+    </a>
+
+    <!-- مشاركة -->
+    <div class="store-share-bar" id="shareBar" style="display:none;">
+        <button onclick="shareCurrentStore('whatsapp')" title="واتساب" style="background:#25D366;">💬</button>
+        <button onclick="shareCurrentStore('facebook')" title="فيسبوك" style="background:#1877F2;">📘</button>
+        <button onclick="shareCurrentStore('twitter')" title="تويتر" style="background:#1DA1F2;">🐦</button>
+        <button onclick="shareCurrentStore('copy')" title="نسخ" style="background:#6B7280;">📋</button>
+    </div>
+
+    <!-- زر العودة للأعلى -->
+    <button class="scroll-top-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let storeData = null, storeProducts = [], storeCoupons = [], storeReviews = [], storePlan = 'free';
+        let appliedCoupon = null, selectedRating = 0, isCloudMode = false, cloudStoreId = null, isDemoMode = false;
+
+        // ---- بيانات المتجر التجريبي ----
+        const DEMO_DATA = {
+            settings: {
+                name: 'حلويات نورة 🍰',
+                phone: '+966500000000',
+                desc: 'أشهى الحلويات الشرقية والغربية بأيدٍ سعودية - توصيل لجميع أنحاء الرياض',
+                currency: 'ر.س',
+                location: 'الرياض، حي الورود',
+                hours: 'يومياً من 10 صباحاً - 11 مساءً',
+                delivery: 'توصيل مجاني للطلبات أكثر من 100 ر.س',
+                instagram: 'https://instagram.com',
+                snapchat: 'https://snapchat.com',
+                tiktok: 'https://tiktok.com'
+            },
+            products: [
+                { id: 'demo1', name: 'بسبوسة بالقشطة', desc: 'بسبوسة طازجة محشوة بالقشطة الطبيعية مع شيرة خفيفة وفستق حلبي مطحون. من أشهر حلوياتنا وأكثرها طلباً!', price: 85, category: 'حلويات شرقية', status: 'available', image: null, gallery: [] },
+                { id: 'demo2', name: 'كنافة نابلسية 🧀', desc: 'كنافة بالجبنة العكاوية الأصلية، مقرمشة من برا وطرية من جوا، مع شيرة الزهر. تكفي 6-8 أشخاص.', price: 120, category: 'حلويات شرقية', status: 'available', image: null, gallery: [] },
+                { id: 'demo3', name: 'بوكس ماكرون فرنسي 🎁', desc: 'بوكس 12 حبة ماكرون بنكهات متنوعة: فستق، توت، شوكولاتة، فانيلا، كراميل، وليمون. هدية مثالية!', price: 150, category: 'حلويات غربية', status: 'available', image: null, gallery: [] }
+            ],
+            coupons: [
+                { id: 'dc1', code: 'WELCOME', type: 'percent', value: 15, expiry: '2026-12-31', active: true }
+            ],
+            reviews: [
+                { id: 'dr1', productId: 'demo1', name: 'سارة المطيري', rating: 5, text: 'والله البسبوسة خيال! طعمها يذكرني ببسبوسة جدتي. طلبتها مرتين وكل مرة أحسن من اللي قبلها ❤️', date: '2026-02-20T10:30:00Z' },
+                { id: 'dr2', productId: 'demo2', name: 'محمد العتيبي', rating: 5, text: 'أفضل كنافة في الرياض بدون مبالغة. الجبنة طبيعية والقرمشة مضبوطة. التوصيل كان سريع جداً 👍', date: '2026-02-22T14:15:00Z' },
+                { id: 'dr3', productId: 'demo3', name: 'نورا الشمري', rating: 4, text: 'هديت البوكس لصديقتي وانبسطت عليه واااايد! التغليف فخم والنكهات متنوعة. أتمنى تضيفون نكهة المانجو 😍', date: '2026-02-24T09:00:00Z' }
+            ],
+            plan: 'pro'
+        };
+
+        // Extract store ID from /s/:id path format
+        function extractStoreIdFromPath() {
+            const match = window.location.pathname.match(/\/s\/([a-z0-9]+)/i);
+            return match ? match[1] : null;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Offline detection
+            NetworkStatus.onChange(online => {
+                document.getElementById('offlineBanner').classList.toggle('visible', !online);
+            });
+            if (!navigator.onLine) document.getElementById('offlineBanner').classList.add('visible');
+
+            // Scroll to top button
+            window.addEventListener('scroll', () => {
+                document.getElementById('scrollTopBtn').classList.toggle('visible', window.scrollY > 300);
+            }, { passive: true });
+
+            initStore();
+        });
+
+        async function initStore() {
+            CloudDB.init();
+            const params = new URLSearchParams(window.location.search);
+            // Support both ?id=xxx and /s/xxx URL formats
+            cloudStoreId = params.get('id') || extractStoreIdFromPath();
+            const isDemo = params.get('demo') === 'true';
+
+            if (isDemo) {
+                // وضع تجريبي - بيانات جاهزة
+                isDemoMode = true;
+                storeData = DEMO_DATA.settings;
+                storeProducts = DEMO_DATA.products;
+                storeCoupons = DEMO_DATA.coupons;
+                storeReviews = DEMO_DATA.reviews;
+                storePlan = DEMO_DATA.plan;
+            } else if (cloudStoreId && CloudDB.initialized) {
+                // وضع السحابة - تحميل من Firebase
+                isCloudMode = true;
+                try {
+                    // Timeout after 10 seconds to prevent infinite loading
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('timeout')), 10000));
+                    const data = await Promise.race([
+                        CloudDB.loadStore(cloudStoreId),
+                        timeoutPromise
+                    ]);
+                    if (data && data.settings) {
+                        storeData = data.settings;
+                        storeProducts = data.products || [];
+                        storeCoupons = data.coupons || [];
+                        storeReviews = data.reviews || [];
+                        storePlan = data.plan || 'free';
+                        CloudDB.incrementView(cloudStoreId);
+                    } else {
+                        showNotFound(); return;
+                    }
+                } catch (e) {
+                    console.error('Store load error:', e);
+                    showNotFound(e.message === 'timeout'
+                        ? 'تعذر الاتصال بالخادم — حاول مرة أخرى لاحقاً'
+                        : undefined);
+                    return;
+                }
+            } else if (cloudStoreId && !CloudDB.initialized) {
+                showNotFound('يرجى إعداد Firebase لعرض المتاجر السحابية'); return;
+            } else {
+                // وضع محلي - معاينة المالك
+                storeData = DB.getStore();
+                storeProducts = DB.getProducts();
+                storeCoupons = DB.getCoupons();
+                storeReviews = DB.getReviews();
+                storePlan = DB.getPlan();
+                DB.incrementView('store_view');
+            }
+
+            if (!storeData || !storeData.name) { showNotFound(); return; }
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('storeContent').style.display = 'block';
+            Cart.load();
+            renderStoreHeader();
+            renderStoreProducts();
+            renderStoreReviews();
+            setupSearch();
+            setupStarInput();
+            updateCartBadge();
+
+            // إظهار علامة متجري للباقة المجانية
+            if (Plans.showsBadge(storePlan)) {
+                document.getElementById('poweredBadge').style.display = 'block';
+            }
+            // إظهار قسم الكوبونات في السلة إذا الباقة تدعم
+            if (Plans.canUseCoupons(storePlan) && storeCoupons.length > 0) {
+                document.getElementById('couponSection').style.display = 'flex';
+            }
+        }
+
+        function showNotFound(msg) {
+            document.getElementById('loadingState').innerHTML = `<div style="text-align:center;padding:60px 20px;"><div style="font-size:4rem;margin-bottom:20px;">🏪</div><h2 style="color:var(--text-white);margin-bottom:12px;">المتجر غير موجود</h2><p style="color:var(--text-light);">${msg || 'تأكد من صحة الرابط أو تواصل مع صاحب المتجر'}</p><a href="index.html" style="display:inline-block;margin-top:20px;color:var(--primary);">← الرئيسية</a></div>`;
+        }
+
+        function renderStoreHeader() {
+            document.title = storeData.name;
+            document.querySelector('meta[property="og:title"]').content = storeData.name;
+            if (storeData.desc) document.querySelector('meta[property="og:description"]').content = storeData.desc;
+            document.getElementById('storeTitle').textContent = storeData.name;
+            document.getElementById('storeDesc').textContent = storeData.desc || '';
+            if (storeData.avatar) document.getElementById('storeLogo').innerHTML = `<img src="${storeData.avatar}" alt="${sanitizeForDisplay(storeData.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            const badges = [];
+            if (storeData.location) badges.push(`<span class="info-badge">📍 ${sanitizeForDisplay(storeData.location)}</span>`);
+            if (storeData.hours) badges.push(`<span class="info-badge">🕐 ${sanitizeForDisplay(storeData.hours)}</span>`);
+            if (storeData.delivery) badges.push(`<span class="info-badge">🚚 ${sanitizeForDisplay(storeData.delivery)}</span>`);
+            if (storeData.instagram) badges.push(`<a href="${storeData.instagram}" target="_blank" rel="noopener" class="social-badge">📸 انستقرام</a>`);
+            if (storeData.snapchat) badges.push(`<a href="${storeData.snapchat}" target="_blank" rel="noopener" class="social-badge">👻 سناب شات</a>`);
+            if (storeData.tiktok) badges.push(`<a href="${storeData.tiktok}" target="_blank" rel="noopener" class="social-badge">🎵 تيك توك</a>`);
+            document.getElementById('storeInfoBadges').innerHTML = badges.join('');
+            document.getElementById('whatsappFab').href = generateWhatsAppInquiry(storeData.phone, storeData.name);
+            document.getElementById('whatsappFab').style.display = 'flex';
+            document.getElementById('shareBar').style.display = 'flex';
+        }
+
+        function renderStoreProducts(filter = '', category = '') {
+            const container = document.getElementById('productsContainer');
+            const cur = storeData.currency || 'ر.س';
+            let filtered = [...storeProducts];
+            if (filter) filtered = filtered.filter(p => p.name.includes(filter) || (p.desc && p.desc.includes(filter)));
+            if (category) filtered = filtered.filter(p => p.category === category);
+            const cats = [...new Set(storeProducts.map(p => p.category).filter(Boolean))];
+            document.getElementById('categoryFilter').innerHTML = `<button class="cat-btn active" onclick="filterCategory('')">الكل</button>` + cats.map(c => `<button class="cat-btn" onclick="filterCategory('${sanitizeForDisplay(c)}')">${sanitizeForDisplay(c)}</button>`).join('');
+            if (filtered.length === 0) { container.innerHTML = `<div style="text-align:center;padding:40px;"><p style="color:var(--text-light);">${storeProducts.length === 0 ? 'لا توجد منتجات حالياً' : 'لا توجد نتائج'}</p></div>`; return; }
+
+            container.innerHTML = filtered.map((p, i) => {
+                const isSold = p.status === 'sold_out';
+                const images = (p.gallery && p.gallery.length > 0) ? p.gallery : (p.image ? [p.image] : []);
+                let imgHtml;
+                if (images.length > 1) { imgHtml = `<div class="gallery-container" id="gallery-${p.id}"><div class="gallery-track" style="transform:translateX(0);">${images.map(img => `<img src="${img}" class="gallery-img" alt="${sanitizeForDisplay(p.name)}">`).join('')}</div><button class="gallery-nav gallery-prev" onclick="slideGallery('${p.id}',-1)">‹</button><button class="gallery-nav gallery-next" onclick="slideGallery('${p.id}',1)">›</button><div class="gallery-dots">${images.map((_, j) => `<span class="gallery-dot${j === 0 ? ' active' : ''}" onclick="goToSlide('${p.id}',${j})"></span>`).join('')}</div></div>`; }
+                else if (images.length === 1) { imgHtml = `<img src="${images[0]}" class="product-image" alt="${sanitizeForDisplay(p.name)}">`; }
+                else { imgHtml = `<div class="product-image-placeholder">📦</div>`; }
+
+                const pReviews = storeReviews.filter(r => r.productId === p.id);
+                const avg = pReviews.length ? (pReviews.reduce((s, r) => s + r.rating, 0) / pReviews.length).toFixed(1) : null;
+
+                return `<div class="product-card animate-in" style="animation-delay:${i * 0.08}s;">
+          ${imgHtml}${isSold ? '<div class="sold-out-badge">غير متوفر</div>' : ''}
+          <div class="product-card-body">
+            <h3 class="product-card-name">${sanitizeForDisplay(p.name)}</h3>
+            ${p.desc ? `<p class="product-card-desc">${sanitizeForDisplay(p.desc)}</p>` : ''}
+            ${p.category ? `<span class="product-category-badge">${sanitizeForDisplay(p.category)}</span>` : ''}
+            ${avg ? `<div class="product-rating"><span style="color:#F59E0B;">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5 - Math.round(avg))}</span> <small>(${pReviews.length})</small></div>` : ''}
+            <div class="product-card-price">${formatPrice(p.price, cur)}</div>
+            ${!isSold ? `<div class="product-card-actions"><button class="btn-add-cart" onclick="addToCart('${p.id}')">🛒 أضف للسلة</button><a href="${generateWhatsAppLink(storeData.phone, p.name, formatPrice(p.price, cur), storeData.name)}" target="_blank" rel="noopener" class="btn-whatsapp-order">💬 اطلب الآن</a></div>` : `<div class="sold-out-text">غير متوفر حالياً</div>`}
+          </div></div>`;
+            }).join('');
+        }
+
+        // ---- Gallery ----
+        const gs = {};
+        function slideGallery(id, d) { if (!gs[id]) gs[id] = 0; const el = document.getElementById(`gallery-${id}`); const imgs = el.querySelectorAll('.gallery-img'); gs[id] = Math.max(0, Math.min(imgs.length - 1, gs[id] + d)); el.querySelector('.gallery-track').style.transform = `translateX(${gs[id] * 100}%)`; el.querySelectorAll('.gallery-dot').forEach((dot, i) => dot.classList.toggle('active', i === gs[id])); }
+        function goToSlide(id, i) { gs[id] = i; const el = document.getElementById(`gallery-${id}`); el.querySelector('.gallery-track').style.transform = `translateX(${i * 100}%)`; el.querySelectorAll('.gallery-dot').forEach((d, j) => d.classList.toggle('active', j === i)); }
+
+        // ---- Search ----
+        const debouncedSearch = debounce((val) => renderStoreProducts(val), 300);
+        function setupSearch() { document.getElementById('searchInput').addEventListener('input', (e) => { debouncedSearch(e.target.value.trim()); }); }
+        function filterCategory(c) { document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderStoreProducts(document.getElementById('searchInput').value.trim(), c); }
+
+        // ---- Cart ----
+        function addToCart(id) { const p = storeProducts.find(x => x.id === id); if (!p || p.status === 'sold_out') return; Cart.add(p); updateCartBadge(); }
+        function toggleCart() { const d = document.getElementById('cartDrawer'); d.classList.toggle('open'); if (d.classList.contains('open')) renderCartItems(); }
+        function updateCartBadge() { const c = Cart.getCount(); document.getElementById('cartBadge').style.display = c > 0 ? 'flex' : 'none'; document.getElementById('cartCount').textContent = c; }
+        function renderCartItems() {
+            const el = document.getElementById('cartItems'), cur = storeData.currency || 'ر.س';
+            if (Cart.isEmpty()) { el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-light);">السلة فارغة</div>`; document.getElementById('checkoutBtn').style.display = 'none'; return; }
+            el.innerHTML = Cart.items.map(item => `<div class="cart-item"><div class="cart-item-info"><strong>${sanitizeForDisplay(item.name)}</strong><span>${formatPrice(item.price, cur)}</span></div><div class="cart-item-controls"><button onclick="changeQty('${item.id}',-1)">−</button><span>${item.qty}</span><button onclick="changeQty('${item.id}',1)">+</button><button onclick="removeFromCart('${item.id}')" style="color:#F87171;margin-right:8px;">🗑️</button></div></div>`).join('');
+            document.getElementById('checkoutBtn').style.display = 'block'; updateCartTotal();
+        }
+        function changeQty(id, d) { const i = Cart.items.find(x => x.id === id); if (i) { if (i.qty + d < 1) return; Cart.updateQty(id, i.qty + d); renderCartItems(); updateCartBadge(); } }
+        function removeFromCart(id) { Cart.remove(id); renderCartItems(); updateCartBadge(); }
+        function updateCartTotal() { const cur = storeData.currency || 'ر.س'; let t = Cart.getTotal(); if (appliedCoupon) t = Cart.applyDiscount(t, appliedCoupon); document.getElementById('cartTotal').textContent = formatPrice(t, cur); }
+
+        // ---- Coupons ----
+        function applyCoupon() {
+            const code = document.getElementById('couponInput').value.trim();
+            if (!code) { showToast('الرجاء إدخال كود الخصم', 'error'); return; }
+            const coupon = storeCoupons.find(c => c.code.toUpperCase() === code.toUpperCase() && c.active);
+            if (!coupon || (coupon.expiry && new Date(coupon.expiry) < new Date())) { document.getElementById('couponStatus').innerHTML = `<p style="color:#F87171;font-size:0.85rem;padding:8px 0;">❌ كود غير صحيح أو منتهي</p>`; appliedCoupon = null; }
+            else { const dt = coupon.type === 'percent' ? `${coupon.value}%` : `${coupon.value} ${storeData.currency || 'ر.س'}`; document.getElementById('couponStatus').innerHTML = `<p style="color:#34D399;font-size:0.85rem;padding:8px 0;">✅ تم تطبيق خصم ${dt}!</p>`; appliedCoupon = coupon; }
+            updateCartTotal();
+        }
+        function checkout() { if (Cart.isEmpty()) return; window.open(Cart.generateCartWhatsAppLink(storeData.phone, storeData.name, storeData.currency || 'ر.س', appliedCoupon), '_blank'); }
+
+        // ---- Reviews ----
+        function setupStarInput() { document.querySelectorAll('.star-btn').forEach(btn => { btn.addEventListener('click', () => { selectedRating = parseInt(btn.dataset.v); document.querySelectorAll('.star-btn').forEach((b, i) => b.textContent = i < selectedRating ? '★' : '☆'); }); }); }
+        function renderStoreReviews() {
+            if (storeProducts.length === 0) return;
+            document.getElementById('reviewsSection').style.display = 'block';
+            document.getElementById('reviewProduct').innerHTML = '<option value="">اختر المنتج</option>' + storeProducts.map(p => `<option value="${p.id}">${sanitizeForDisplay(p.name)}</option>`).join('');
+            if (storeReviews.length === 0) { document.getElementById('reviewSummary').innerHTML = '<span style="color:var(--text-light);">لا توجد تقييمات بعد</span>'; document.getElementById('reviewsDisplay').innerHTML = ''; return; }
+            const avg = (storeReviews.reduce((s, r) => s + r.rating, 0) / storeReviews.length).toFixed(1);
+            document.getElementById('reviewSummary').innerHTML = `<span style="color:#F59E0B;font-size:1.2rem;">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5 - Math.round(avg))}</span> <strong>${avg}</strong> <span style="color:var(--text-light);">(${storeReviews.length})</span>`;
+            document.getElementById('reviewsDisplay').innerHTML = storeReviews.slice(-10).reverse().map(r => { const p = storeProducts.find(x => x.id === r.productId); return `<div class="card review-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><strong style="color:var(--text-white);">${sanitizeForDisplay(r.name)}</strong><span style="color:#F59E0B;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span></div><p style="color:var(--text-light);font-size:0.95rem;">${sanitizeForDisplay(r.text)}</p><small style="color:var(--text-light);">📦 ${p ? sanitizeForDisplay(p.name) : 'منتج'} • ${new Date(r.date).toLocaleDateString('ar-SA')}</small></div>`; }).join('');
+        }
+        async function submitReview() {
+            const productId = document.getElementById('reviewProduct').value, name = document.getElementById('reviewName').value.trim(), text = document.getElementById('reviewText').value.trim();
+            if (!productId) { showToast('اختر المنتج', 'error'); return; } if (!name) { showToast('أدخل اسمك', 'error'); return; } if (!selectedRating) { showToast('اختر التقييم', 'error'); return; } if (!text) { showToast('اكتب رأيك', 'error'); return; }
+            // Rate limiting
+            if (!RateLimiter.canAction('review_submit')) {
+                const remaining = Math.ceil(RateLimiter.getRemainingMs('review_submit') / 1000);
+                showToast(`انتظر ${remaining} ثانية قبل إرسال تقييم آخر`, 'error');
+                return;
+            }
+            const review = { productId, name, rating: selectedRating, text, id: Date.now().toString(), date: new Date().toISOString() };
+            storeReviews.push(review);
+            if (isCloudMode && cloudStoreId) { try { await CloudDB.addReview(cloudStoreId, review); } catch (e) { console.log(e); } }
+            else { DB.addReview(review); }
+            showToast('شكراً لك! تم إرسال تقييمك');
+            document.getElementById('reviewName').value = ''; document.getElementById('reviewText').value = ''; selectedRating = 0; document.querySelectorAll('.star-btn').forEach(b => b.textContent = '☆');
+            renderStoreReviews(); renderStoreProducts();
+        }
+
+        // ---- Share ----
+        function shareCurrentStore(p) { const url = window.location.href, text = `تصفّح منتجات ${storeData.name} واطلب عبر واتساب!`; switch (p) { case 'whatsapp': shareOnWhatsApp(url, text); break; case 'facebook': shareOnFacebook(url); break; case 'twitter': shareOnTwitter(url, text); break; case 'copy': copyToClipboard(url); break; } }
+    </script>
+</body>
+
+</html>
