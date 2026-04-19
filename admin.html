@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UP2U Store - لوحة إدارة المنصة</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .admin-body {
+            background: #0a0e1a;
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #1a1040, #0a0e1a);
+            border-bottom: 1px solid rgba(129, 140, 248, 0.2);
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(12px);
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .admin-logo .badge {
+            background: linear-gradient(135deg, #818CF8, #6366F1);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        .admin-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 10px 22px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: 'Cairo';
+            transition: all 0.3s;
+        }
+
+        .admin-tab:hover {
+            background: rgba(129, 140, 248, 0.1);
+            border-color: rgba(129, 140, 248, 0.3);
+        }
+
+        .admin-tab.active {
+            background: rgba(129, 140, 248, 0.15);
+            border-color: #818CF8;
+            color: #818CF8;
+        }
+
+        .admin-section {
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .admin-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: rgba(129, 140, 248, 0.08);
+            border: 1px solid rgba(129, 140, 248, 0.15);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-box .num {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #818CF8;
+        }
+
+        .stat-box .label {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .store-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .store-list-item .store-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .store-list-item .store-name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .store-list-item .store-meta {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+
+        .plan-select {
+            background: var(--bg-dark-3);
+            border: 1px solid var(--border-dark);
+            color: var(--text-white);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-family: 'Cairo';
+            font-size: 0.85rem;
+        }
+
+        .logo-upload-area {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed rgba(129, 140, 248, 0.3);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .logo-upload-area:hover {
+            border-color: #818CF8;
+            background: rgba(129, 140, 248, 0.05);
+        }
+
+        .logo-upload-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .admin-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-white);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-family: 'Cairo';
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .admin-input:focus {
+            outline: none;
+            border-color: #818CF8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #818CF8, #6366F1);
+            color: white;
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-family: 'Cairo';
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(129, 140, 248, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22C55E, #16A34A);
+        }
+
+        .admin-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .admin-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+        }
+
+        .backup-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.15);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        @media(max-width:768px) {
+            .admin-main {
+                padding: 16px;
+            }
+
+            .admin-header {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body class="admin-body">
+    <!-- شاشة الدخول -->
+    <div id="adminAuth"
+        style="position:fixed;inset:0;background:#0a0e1a;z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div class="admin-card" style="max-width:420px;width:90%;text-align:center;padding:40px;">
+            <div style="font-size:3rem;margin-bottom:16px;">🔒</div>
+            <h2 style="margin-bottom:8px;">لوحة إدارة المنصة</h2>
+            <p style="color:var(--text-light);margin-bottom:24px;font-size:0.85rem;">أدخل بيانات حساب الأدمن</p>
+            <input type="email" id="adminEmail" class="admin-input" placeholder="البريد الإلكتروني" dir="ltr"
+                style="text-align:center;margin-bottom:12px;"
+                onkeypress="if(event.key==='Enter')document.getElementById('adminPass').focus()">
+            <input type="password" id="adminPass" class="admin-input" placeholder="كلمة المرور"
+                style="text-align:center;margin-bottom:16px;" onkeypress="if(event.key==='Enter')adminLogin()">
+            <button class="btn-admin" onclick="adminLogin()" style="width:100%;padding:14px;" id="adminLoginBtn">🔐
+                دخول</button>
+            <p id="adminAuthError" style="color:#F87171;margin-top:12px;font-size:0.85rem;display:none;"></p>
+            <p style="color:var(--text-light);font-size:0.75rem;margin-top:20px;">هذه الصفحة مخصصة لمديري المنصة فقط</p>
+        </div>
+    </div>
+
+    <!-- الهيدر -->
+    <header class="admin-header" id="adminHeaderBar" style="display:none;">
+        <div class="admin-logo">
+            <div
+                style="width:36px;height:36px;background:linear-gradient(135deg,#818CF8,#6366F1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;">
+                ⚡</div>
+            Beweble Store <span class="badge">ADMIN</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <span id="adminEmailLabel" style="color:var(--text-light);font-size:0.8rem;"></span>
+            <button class="btn-admin btn-danger" onclick="adminLogout()" style="padding:8px 16px;font-size:0.8rem;">🚪
+                خروج</button>
+        </div>
+    </header>
+
+    <!-- المحتوى -->
+    <main class="admin-main" id="adminMainContent" style="display:none;">
+        <!-- التابات -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="showAdminTab('overview')">📊 نظرة عامة</button>
+            <button class="admin-tab" onclick="showAdminTab('branding')">🎨 هوية المنصة</button>
+            <button class="admin-tab" onclick="showAdminTab('stores')">🏪 المتاجر</button>
+            <button class="admin-tab" onclick="showAdminTab('access')">👥 الصلاحيات</button>
+            <button class="admin-tab" onclick="showAdminTab('backup')">💾 النسخ الاحتياطي</button>
+        </div>
+
+        <!-- نظرة عامة -->
+        <div class="admin-section active" id="tab-overview">
+            <div class="admin-grid" id="overviewStats"></div>
+        </div>
+
+        <!-- هوية المنصة -->
+        <div class="admin-section" id="tab-branding">
+            <div class="admin-card">
+                <h3>🎨 لوجو المنصة</h3>
+                <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+                    <div class="logo-upload-area" id="platformLogoArea"
+                        onclick="document.getElementById('platformLogoInput').click()">
+                        <img id="platformLogoPreview" src="" style="display:none;">
+                        <span id="platformLogoPlaceholder" style="font-size:2.5rem;">📷</span>
+                        <input type="file" accept="image/*" id="platformLogoInput" style="display:none;"
+                            onchange="onPlatformLogoSelected(this)">
+                    </div>
+                    <div>
+                        <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:8px;">اضغط لرفع لوجو المنصة
+                            (PNG/JPG)</p>
+                        <button class="btn-admin btn-danger" onclick="removePlatformLogo()" id="removePlatformLogoBtn"
+                            style="display:none;padding:6px 14px;font-size:0.8rem;">🗑️ حذف اللوجو</button>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-card">
+                <h3>📝 نصوص الصفحة الرئيسية</h3>
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                    <div><label style="color:var(--text-light);font-size:0.85rem;margin-bottom:6px;display:block;">اسم
+                            المنصة</label><input type="text" class="admin-input" id="brandName" placeholder="UP2U Store"
+                            maxlength="30"></div>
+                    <div><label style="color:var(--text-light);font-size:0.85rem;margin-bottom:6px;display:block;">عنوان
+                            الهيرو</label><input type="text" class="admin-input" id="brandHeroTitle"
+                            placeholder="أنشئ متجرك على واتساب خلال دقيقتين" maxlength="80"></div>
+                    <div><label style="color:var(--text-light);font-size:0.85rem;margin-bottom:6px;display:block;">وصف
+                            الهيرو</label><textarea class="admin-input" id="brandHeroDesc"
+                            placeholder="حوّل منتجاتك إلى متجر إلكتروني..." maxlength="300"
+                            style="min-height:80px;resize:vertical;"></textarea></div>
+                    <div><label style="color:var(--text-light);font-size:0.85rem;margin-bottom:6px;display:block;">رقم
+                            واتساب الدعم (مع رمز الدولة)</label><input type="tel" class="admin-input"
+                            id="brandSupportPhone" placeholder="+966500000000" dir="ltr" style="text-align:left;"
+                            maxlength="15"></div>
+                </div>
+                <button class="btn-admin" onclick="saveBranding()" style="margin-top:20px;">💾 حفظ الهوية</button>
+            </div>
+        </div>
+
+        <!-- المتاجر -->
+        <div class="admin-section" id="tab-stores">
+            <div class="admin-card">
+                <h3>🏪 جميع المتاجر المسجلة</h3>
+                <div style="margin-bottom:16px;"><input type="text" class="admin-input" id="storeSearchInput"
+                        placeholder="🔍 ابحث باسم المتجر أو الإيميل..." oninput="filterStores(this.value)"></div>
+                <div id="storesList">
+                    <p style="color:var(--text-light);text-align:center;padding:40px;">جاري التحميل...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- الصلاحيات -->
+        <div class="admin-section" id="tab-access">
+            <div class="admin-card">
+                <h3>👥 مديرو المنصة</h3>
+                <div id="adminsList" class="admin-list"></div>
+                <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+                    <input type="email" class="admin-input" id="newAdminEmail" placeholder="إيميل الأدمن الجديد"
+                        dir="ltr" style="flex:1;min-width:200px;text-align:left;">
+                    <button class="btn-admin" onclick="addAdmin()">➕ إضافة أدمن</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- النسخ الاحتياطي -->
+        <div class="admin-section" id="tab-backup">
+            <div class="admin-card">
+                <h3>💾 إنشاء نسخة احتياطية</h3>
+                <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:16px;">يتم حفظ نسخة من كل بيانات المنصة
+                    (المتاجر + الإعدادات + الباقات)</p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn-admin btn-success" onclick="createBackup()">📦 إنشاء نسخة احتياطية الآن</button>
+                    <button class="btn-admin" onclick="downloadBackup()">⬇️ تنزيل كملف JSON</button>
+                </div>
+            </div>
+            <div class="admin-card">
+                <h3>📂 النسخ المحفوظة</h3>
+                <div id="backupsList"></div>
+            </div>
+            <div class="admin-card">
+                <h3>📤 استعادة من ملف</h3>
+                <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:16px;">ارفع ملف JSON لاستعادة نسخة
+                    احتياطية سابقة</p>
+                <input type="file" accept=".json" id="restoreFileInput" class="admin-input"
+                    onchange="previewRestore(this)">
+                <div id="restorePreview" style="display:none;margin-top:12px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let allStores = {}, allAdmins = {}, platformData = {};
+
+        // ---- تسجيل دخول الأدمن ----
+        async function adminLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const pass = document.getElementById('adminPass').value;
+            const err = document.getElementById('adminAuthError');
+            const btn = document.getElementById('adminLoginBtn');
+            err.style.display = 'none';
+            if (!email || !pass) { err.textContent = 'أدخل البيانات كاملة'; err.style.display = 'block'; return; }
+            btn.disabled = true; btn.textContent = 'جاري التحقق...';
+            try {
+                Auth.init(); CloudDB.init();
+                await Auth.login(email, pass);
+                // تحقق من صلاحيات الأدمن
+                const uid = Auth.getUid();
+                const adminSnap = await CloudDB.db.ref(`admins/${uid}`).once('value');
+                if (!adminSnap.exists()) {
+                    // أول مستخدم يدخل يصبح super admin تلقائياً
+                    const adminsSnap = await CloudDB.db.ref('admins').once('value');
+                    if (!adminsSnap.exists() || !adminsSnap.val()) {
+                        await CloudDB.db.ref(`admins/${uid}`).set({
+                            email: email, role: 'super', addedAt: new Date().toISOString()
+                        });
+                    } else {
+                        await Auth.logout();
+                        err.textContent = 'ليس لديك صلاحيات أدمن. تواصل مع المسؤول.';
+                        err.style.display = 'block';
+                        btn.disabled = false; btn.textContent = '🔐 دخول';
+                        return;
+                    }
+                }
+                showAdminDashboard();
+            } catch (e) {
+                let msg = 'حدث خطأ';
+                if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') msg = 'كلمة المرور غير صحيحة';
+                else if (e.code === 'auth/user-not-found') msg = 'هذا الإيميل غير مسجل';
+                else if (e.code === 'auth/too-many-requests') msg = 'محاولات كثيرة — انتظر قليلاً';
+                err.textContent = msg; err.style.display = 'block';
+                btn.disabled = false; btn.textContent = '🔐 دخول';
+            }
+        }
+
+        function adminLogout() {
+            showConfirm('هل تريد تسجيل الخروج؟', async () => {
+                await Auth.logout(); location.reload();
+            });
+        }
+
+        async function showAdminDashboard() {
+            document.getElementById('adminAuth').style.display = 'none';
+            document.getElementById('adminHeaderBar').style.display = 'flex';
+            document.getElementById('adminMainContent').style.display = 'block';
+            document.getElementById('adminEmailLabel').textContent = Auth.getEmail();
+            await loadAllData();
+        }
+
+        async function loadAllData() {
+            try {
+                // تحميل المتاجر
+                const storesSnap = await CloudDB.db.ref('stores').once('value');
+                allStores = storesSnap.val() || {};
+                // تحميل الأدمنز
+                const adminsSnap = await CloudDB.db.ref('admins').once('value');
+                allAdmins = adminsSnap.val() || {};
+                // تحميل هوية المنصة
+                const platformSnap = await CloudDB.db.ref('platform').once('value');
+                platformData = platformSnap.val() || {};
+
+                renderOverview();
+                renderStores();
+                renderAdmins();
+                loadBranding();
+                renderBackups();
+            } catch (e) { console.error('Load error:', e); showToast('خطأ في تحميل البيانات', 'error'); }
+        }
+
+        // ---- التابات ----
+        function showAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+        }
+
+        // ---- نظرة عامة ----
+        function renderOverview() {
+            const storeCount = Object.keys(allStores).length;
+            const adminCount = Object.keys(allAdmins).length;
+            let totalProducts = 0, totalViews = 0;
+            const planCounts = { free: 0, pro: 0, business: 0 };
+            Object.values(allStores).forEach(s => {
+                totalProducts += (s.products ? (Array.isArray(s.products) ? s.products.length : Object.keys(s.products).length) : 0);
+                totalViews += (s.views && s.views.store_view ? s.views.store_view : 0);
+                const p = s.plan || 'free';
+                if (planCounts[p] !== undefined) planCounts[p]++;
+            });
+            document.getElementById('overviewStats').innerHTML = `
+                <div class="stat-box"><div class="num">${storeCount}</div><div class="label">إجمالي المتاجر</div></div>
+                <div class="stat-box"><div class="num">${totalProducts}</div><div class="label">إجمالي المنتجات</div></div>
+                <div class="stat-box"><div class="num">${totalViews.toLocaleString('ar-SA')}</div><div class="label">إجمالي الزيارات</div></div>
+                <div class="stat-box"><div class="num">${adminCount}</div><div class="label">مديرو المنصة</div></div>
+                <div class="stat-box"><div class="num">${planCounts.free}</div><div class="label">باقة مجانية</div></div>
+                <div class="stat-box"><div class="num">${planCounts.pro}</div><div class="label">باقة احترافية</div></div>
+                <div class="stat-box"><div class="num">${planCounts.business}</div><div class="label">باقة أعمال</div></div>
+            `;
+        }
+
+        // ---- المتاجر ----
+        function renderStores(filter = '') {
+            const el = document.getElementById('storesList');
+            const entries = Object.entries(allStores);
+            const filtered = filter ? entries.filter(([id, s]) => {
+                const name = s.settings?.name || '';
+                const email = s.ownerEmail || '';
+                return name.includes(filter) || email.includes(filter) || id.includes(filter);
+            }) : entries;
+            if (filtered.length === 0) { el.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:20px;">لا توجد متاجر</p>'; return; }
+            el.innerHTML = filtered.map(([id, s]) => {
+                const name = s.settings?.name || 'بدون اسم';
+                const email = s.ownerEmail || 'غير معروف';
+                const plan = s.plan || 'free';
+                const products = s.products ? (Array.isArray(s.products) ? s.products.length : Object.keys(s.products).length) : 0;
+                const views = s.views?.store_view || 0;
+                return `<div class="store-list-item">
+                    <div class="store-info">
+                        <div class="store-name">${sanitizeForDisplay(name)}</div>
+                        <div class="store-meta">📧 ${sanitizeForDisplay(email)} · 📦 ${products} منتجات · 👁️ ${views} زيارة · 🔑 ${id.substring(0, 8)}...</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <select class="plan-select" onchange="changePlan('${id}', this.value)">
+                            <option value="free" ${plan === 'free' ? 'selected' : ''}>مجاني</option>
+                            <option value="pro" ${plan === 'pro' ? 'selected' : ''}>احترافي</option>
+                            <option value="business" ${plan === 'business' ? 'selected' : ''}>أعمال</option>
+                        </select>
+                        <a href="/s/${id}" target="_blank" class="btn-admin" style="padding:6px 14px;font-size:0.8rem;text-decoration:none;">👁️ معاينة</a>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        function filterStores(val) { renderStores(val.trim()); }
+
+        async function changePlan(storeId, newPlan) {
+            try {
+                await CloudDB.db.ref(`stores/${storeId}/plan`).set(newPlan);
+                allStores[storeId].plan = newPlan;
+                renderOverview();
+                showToast(`تم تحديث الباقة إلى ${newPlan}`);
+            } catch (e) { showToast('خطأ في تحديث الباقة', 'error'); console.error(e); }
+        }
+
+        // ---- هوية المنصة ----
+        let currentPlatformLogo = null;
+        function loadBranding() {
+            document.getElementById('brandName').value = platformData.name || 'UP2U Store';
+            document.getElementById('brandHeroTitle').value = platformData.heroTitle || '';
+            document.getElementById('brandHeroDesc').value = platformData.heroDesc || '';
+            document.getElementById('brandSupportPhone').value = platformData.supportPhone || '';
+            if (platformData.logo) {
+                currentPlatformLogo = platformData.logo;
+                document.getElementById('platformLogoPreview').src = platformData.logo;
+                document.getElementById('platformLogoPreview').style.display = 'block';
+                document.getElementById('platformLogoPlaceholder').style.display = 'none';
+                document.getElementById('removePlatformLogoBtn').style.display = 'inline-block';
+            }
+        }
+        function onPlatformLogoSelected(input) {
+            handleImageUpload(input, (img) => {
+                currentPlatformLogo = img;
+                document.getElementById('platformLogoPreview').src = img;
+                document.getElementById('platformLogoPreview').style.display = 'block';
+                document.getElementById('platformLogoPlaceholder').style.display = 'none';
+                document.getElementById('removePlatformLogoBtn').style.display = 'inline-block';
+            });
+        }
+        function removePlatformLogo() {
+            currentPlatformLogo = null;
+            document.getElementById('platformLogoPreview').style.display = 'none';
+            document.getElementById('platformLogoPlaceholder').style.display = 'block';
+            document.getElementById('removePlatformLogoBtn').style.display = 'none';
+        }
+        async function saveBranding() {
+            const data = {
+                name: document.getElementById('brandName').value.trim() || 'UP2U Store',
+                heroTitle: document.getElementById('brandHeroTitle').value.trim(),
+                heroDesc: document.getElementById('brandHeroDesc').value.trim(),
+                supportPhone: document.getElementById('brandSupportPhone').value.trim(),
+                logo: currentPlatformLogo,
+                updatedAt: new Date().toISOString()
+            };
+            try {
+                await CloudDB.db.ref('platform').set(data);
+                platformData = data;
+                showToast('تم حفظ هوية المنصة بنجاح! ✅');
+            } catch (e) { showToast('خطأ في الحفظ', 'error'); console.error(e); }
+        }
+
+        // ---- الصلاحيات ----
+        function renderAdmins() {
+            const el = document.getElementById('adminsList');
+            const entries = Object.entries(allAdmins);
+            if (entries.length === 0) { el.innerHTML = '<p style="color:var(--text-light);">لا يوجد مديرون</p>'; return; }
+            el.innerHTML = entries.map(([uid, a]) => {
+                const isSelf = uid === Auth.getUid();
+                const isSuper = a.role === 'super';
+                return `<div class="admin-list-item">
+                    <div>
+                        <strong>${sanitizeForDisplay(a.email)}</strong>
+                        <span style="background:${isSuper ? 'rgba(129,140,248,0.15)' : 'rgba(34,197,94,0.15)'};color:${isSuper ? '#818CF8' : '#22C55E'};padding:2px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;margin-right:8px;">${isSuper ? 'SUPER' : 'ADMIN'}</span>
+                        ${isSelf ? '<span style="color:var(--text-light);font-size:0.75rem;">(أنت)</span>' : ''}
+                    </div>
+                    ${!isSelf ? `<button class="btn-admin btn-danger" onclick="removeAdmin('${uid}')" style="padding:6px 14px;font-size:0.8rem;">🗑️ حذف</button>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        async function addAdmin() {
+            const email = document.getElementById('newAdminEmail').value.trim();
+            if (!email || !email.includes('@')) { showToast('أدخل إيميل صحيح', 'error'); return; }
+            // نحتاج الـ UID — نطلب من الأدمن الجديد يسجل دخول أولاً
+            // حل بديل: نحفظ بالإيميل ونتحقق عند الدخول
+            const tempId = btoa(email).replace(/[^a-zA-Z0-9]/g, '');
+            try {
+                await CloudDB.db.ref(`admins/${tempId}`).set({
+                    email: email, role: 'admin', addedAt: new Date().toISOString(), pendingUid: true
+                });
+                allAdmins[tempId] = { email, role: 'admin' };
+                renderAdmins();
+                document.getElementById('newAdminEmail').value = '';
+                showToast(`تم إضافة ${email} كأدمن`);
+            } catch (e) { showToast('خطأ في الإضافة', 'error'); console.error(e); }
+        }
+
+        async function removeAdmin(uid) {
+            showConfirm('هل تريد حذف هذا الأدمن؟', async () => {
+                try {
+                    await CloudDB.db.ref(`admins/${uid}`).remove();
+                    delete allAdmins[uid];
+                    renderAdmins();
+                    showToast('تم حذف الأدمن');
+                } catch (e) { showToast('خطأ في الحذف', 'error'); }
+            });
+        }
+
+        // ---- النسخ الاحتياطي ----
+        async function createBackup() {
+            try {
+                const backup = {
+                    stores: allStores,
+                    platform: platformData,
+                    admins: allAdmins,
+                    createdAt: new Date().toISOString(),
+                    createdBy: Auth.getEmail()
+                };
+                const backupId = Date.now().toString();
+                await CloudDB.db.ref(`backups/${backupId}`).set(backup);
+                showToast('تم إنشاء نسخة احتياطية بنجاح! ✅');
+                renderBackups();
+            } catch (e) { showToast('خطأ في إنشاء النسخة', 'error'); console.error(e); }
+        }
+
+        async function renderBackups() {
+            const el = document.getElementById('backupsList');
+            try {
+                const snap = await CloudDB.db.ref('backups').orderByKey().limitToLast(10).once('value');
+                const backups = snap.val();
+                if (!backups) { el.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:20px;">لا توجد نسخ احتياطية</p>'; return; }
+                el.innerHTML = Object.entries(backups).reverse().map(([id, b]) => {
+                    const date = new Date(b.createdAt).toLocaleString('ar-SA');
+                    const storeCount = b.stores ? Object.keys(b.stores).length : 0;
+                    return `<div class="backup-item">
+                        <div>
+                            <strong style="color:#22C55E;">📦 نسخة ${date}</strong>
+                            <div style="color:var(--text-light);font-size:0.8rem;margin-top:2px;">🏪 ${storeCount} متجر · بواسطة ${sanitizeForDisplay(b.createdBy || 'غير معروف')}</div>
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn-admin btn-success" onclick="restoreBackup('${id}')" style="padding:6px 14px;font-size:0.8rem;">🔄 استعادة</button>
+                            <button class="btn-admin btn-danger" onclick="deleteBackup('${id}')" style="padding:6px 14px;font-size:0.8rem;">🗑️</button>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (e) { el.innerHTML = '<p style="color:#F87171;">خطأ في تحميل النسخ</p>'; }
+        }
+
+        function downloadBackup() {
+            const backup = { stores: allStores, platform: platformData, admins: allAdmins, exportedAt: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `up2u-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+            URL.revokeObjectURL(url);
+            showToast('تم تنزيل النسخة الاحتياطية ⬇️');
+        }
+
+        function previewRestore(input) {
+            const file = input.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    const storeCount = data.stores ? Object.keys(data.stores).length : 0;
+                    document.getElementById('restorePreview').style.display = 'block';
+                    document.getElementById('restorePreview').innerHTML = `
+                        <div style="padding:16px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius-sm);margin-bottom:12px;">
+                            <p style="color:#F59E0B;font-weight:700;">⚠️ معاينة النسخة</p>
+                            <p style="color:var(--text-light);font-size:0.85rem;">🏪 ${storeCount} متجر · 📅 ${data.exportedAt || data.createdAt || 'غير معروف'}</p>
+                        </div>
+                        <button class="btn-admin btn-danger" onclick="executeRestore()">⚠️ استعادة هذه النسخة (سيتم استبدال كل البيانات الحالية)</button>
+                    `;
+                    window._restoreData = data;
+                } catch { showToast('ملف غير صالح', 'error'); }
+            };
+            reader.readAsText(file);
+        }
+
+        async function executeRestore() {
+            if (!window._restoreData) return;
+            showConfirm('⚠️ سيتم استبدال كل البيانات الحالية! هل أنت متأكد؟', async () => {
+                try {
+                    if (window._restoreData.stores) await CloudDB.db.ref('stores').set(window._restoreData.stores);
+                    if (window._restoreData.platform) await CloudDB.db.ref('platform').set(window._restoreData.platform);
+                    showToast('تم استعادة النسخة بنجاح! ✅');
+                    await loadAllData();
+                } catch (e) { showToast('خطأ في الاستعادة', 'error'); console.error(e); }
+            });
+        }
+
+        async function restoreBackup(id) {
+            showConfirm('⚠️ سيتم استبدال كل البيانات الحالية بهذه النسخة!', async () => {
+                try {
+                    const snap = await CloudDB.db.ref(`backups/${id}`).once('value');
+                    const backup = snap.val();
+                    if (!backup) { showToast('النسخة غير موجودة', 'error'); return; }
+                    if (backup.stores) await CloudDB.db.ref('stores').set(backup.stores);
+                    if (backup.platform) await CloudDB.db.ref('platform').set(backup.platform);
+                    showToast('تم استعادة النسخة بنجاح! ✅');
+                    await loadAllData();
+                } catch (e) { showToast('خطأ في الاستعادة', 'error'); console.error(e); }
+            });
+        }
+
+        async function deleteBackup(id) {
+            showConfirm('حذف هذه النسخة الاحتياطية؟', async () => {
+                try {
+                    await CloudDB.db.ref(`backups/${id}`).remove();
+                    showToast('تم الحذف');
+                    renderBackups();
+                } catch (e) { showToast('خطأ في الحذف', 'error'); }
+            });
+        }
+
+        // ---- Init ----
+        document.addEventListener('DOMContentLoaded', () => {
+            Auth.init(); CloudDB.init();
+            Auth.onAuthStateChanged(async user => {
+                if (user) {
+                    const adminSnap = await CloudDB.db.ref(`admins/${user.uid}`).once('value');
+                    if (adminSnap.exists()) showAdminDashboard();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
