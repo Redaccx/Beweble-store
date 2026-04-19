@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/s/:id",
-      "destination": "/store?id=:id"
+      "destination": "store?id=:id"
     }
   ],
   "trailingSlash": false,
