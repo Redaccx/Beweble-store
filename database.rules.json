@@ -1,0 +1,32 @@
+{
+    "rules": {
+        "stores": {
+            "$storeId": {
+                ".read": true,
+                ".write": "auth !== null && auth.uid === $storeId",
+                "reviews": {
+                    ".write": true,
+                    ".validate": "newData.hasChildren()"
+                },
+                "views": {
+                    "$counter": {
+                        ".write": true,
+                        ".validate": "newData.isNumber() && newData.val() === (data.val() || 0) + 1"
+                    }
+                }
+            }
+        },
+        "platform": {
+            ".read": true,
+            ".write": "auth !== null && root.child('admins').child(auth.uid).exists()"
+        },
+        "admins": {
+            ".read": "auth !== null && root.child('admins').child(auth.uid).exists()",
+            ".write": "auth !== null && root.child('admins').child(auth.uid).child('role').val() === 'super'"
+        },
+        "backups": {
+            ".read": "auth !== null && root.child('admins').child(auth.uid).exists()",
+            ".write": "auth !== null && root.child('admins').child(auth.uid).exists()"
+        }
+    }
+}
