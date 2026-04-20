@@ -311,6 +311,39 @@
           </div></div>`;
             }).join('');
         }
+        
+        // ---- Get Store ID from URL ----
+function getStoreIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+}
+
+
+async function loadStoreFromCloud() {
+    const storeId = getStoreIdFromUrl();
+    
+    if (!storeId) {
+        showToast('لا يوجد متجر', 'error');
+        return;
+    }
+    
+    const data = await CloudDB.loadStore(storeId);
+    
+    if (!data) {
+        showToast('المتجر غير موجود', 'error');
+        return;
+    }
+    
+    // هون خزّن البيانات
+    DB.saveStore(data.settings || {});
+    DB.saveProducts(data.products || []);
+    DB.saveCoupons(data.coupons || []);
+    DB.saveReviews(data.reviews || []);
+    
+    // بعدين اعمل render
+    renderStore();
+}
+
 
         // ---- Gallery ----
         const gs = {};
