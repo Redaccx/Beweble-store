@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UP2U Store - لوحة إدارة المنصة</title>
+    <title>Beweble Store - لوحة إدارة المنصة</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .admin-body {
@@ -355,7 +355,7 @@
                 <h3>📝 نصوص الصفحة الرئيسية</h3>
                 <div style="display:flex;flex-direction:column;gap:16px;">
                     <div><label style="color:var(--text-light);font-size:0.85rem;margin-bottom:6px;display:block;">اسم
-                            المنصة</label><input type="text" class="admin-input" id="brandName" placeholder="UP2U Store"
+                            المنصة</label><input type="text" class="admin-input" id="brandName" placeholder="Beweble Store"
                             maxlength="30"></div>
                     <div><label style="color:var(--text-light);font-size:0.85rem;margin-bottom:6px;display:block;">عنوان
                             الهيرو</label><input type="text" class="admin-input" id="brandHeroTitle"
@@ -565,7 +565,7 @@
                             <option value="pro" ${plan === 'pro' ? 'selected' : ''}>احترافي</option>
                             <option value="business" ${plan === 'business' ? 'selected' : ''}>أعمال</option>
                         </select>
-                      <a href="/store.html?id=${id}" target="_blank" class="btn-admin" style="padding:6px 14px;font-size:0.8rem;text-decoration:none;">👁️ معاينة</a>
+                      <a href="store.html?id=${id}" target="_blank" class="btn-admin" style="padding:6px 14px;font-size:0.8rem;text-decoration:none;">👁️ معاينة</a>
                     </div>
                 </div>`;
             }).join('');
@@ -584,7 +584,7 @@
         // ---- هوية المنصة ----
         let currentPlatformLogo = null;
         function loadBranding() {
-            document.getElementById('brandName').value = platformData.name || 'UP2U Store';
+            document.getElementById('brandName').value = platformData.name || 'Beweble Store';
             document.getElementById('brandHeroTitle').value = platformData.heroTitle || '';
             document.getElementById('brandHeroDesc').value = platformData.heroDesc || '';
             document.getElementById('brandSupportPhone').value = platformData.supportPhone || '';
@@ -613,7 +613,7 @@
         }
         async function saveBranding() {
             const data = {
-                name: document.getElementById('brandName').value.trim() || 'UP2U Store',
+                name: document.getElementById('brandName').value.trim() || 'Beweble Store',
                 heroTitle: document.getElementById('brandHeroTitle').value.trim(),
                 heroDesc: document.getElementById('brandHeroDesc').value.trim(),
                 supportPhone: document.getElementById('brandSupportPhone').value.trim(),
@@ -718,7 +718,7 @@
             const backup = { stores: allStores, platform: platformData, admins: allAdmins, exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = `up2u-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+            const a = document.createElement('a'); a.href = url; a.download = `Beweble-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click();
             URL.revokeObjectURL(url);
             showToast('تم تنزيل النسخة الاحتياطية ⬇️');
         }
