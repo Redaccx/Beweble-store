@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UP2U Store - لوحة التحكم</title>
+    <title>Beweble Store - لوحة التحكم</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -18,7 +18,7 @@
         style="position:fixed;inset:0;background:var(--bg-dark);z-index:9999;display:flex;align-items:center;justify-content:center;">
         <div class="card" style="max-width:420px;width:90%;text-align:center;padding:40px;">
             <div style="font-size:3rem;margin-bottom:16px;">🔐</div>
-            <h2 style="margin-bottom:20px;color:var(--text-white);">أهلاً بك في UP2U Store</h2>
+            <h2 style="margin-bottom:20px;color:var(--text-white);">أهلاً بك في Beweble Store</h2>
             <!-- تابات الدخول / التسجيل -->
             <div id="authTabs"
                 style="display:flex;gap:0;margin-bottom:24px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border-dark);">
@@ -57,7 +57,7 @@
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <div class="logo-icon" style="width:32px;height:32px;font-size:1rem;">🛒</div> UP2U Store
+            <div class="logo-icon" style="width:32px;height:32px;font-size:1rem;">🛒</div> Beweble Store
         </div>
         <nav class="sidebar-nav">
             <a href="#" class="sidebar-link active" data-section="setup" onclick="showSection('setup')">⚙️ إعدادات
@@ -529,7 +529,7 @@
         function updateStoreLink() { const s = DB.getStore(), box = document.getElementById('storeLinkBox'); if (s && s.name && s.phone) { box.style.display = 'flex'; document.getElementById('storeLink').value = getStoreUrl(); } else { box.style.display = 'none'; } }
         function copyLink() { copyToClipboard(document.getElementById('storeLink').value); }
         function previewStore() { const s = DB.getStore(); if (!s || !s.name) { showToast('احفظ الإعدادات أولاً', 'error'); return; } const sid = CloudDB.getMyStoreId();
-window.open(sid ? `/store.html?id=${sid}` : '/store.html', '_blank'); }
+window.open(sid ? `store.html?id=${sid}` : '/store.html', '_blank'); }
         function shareStoreWhatsApp() { const s = DB.getStore(); if (!s) return; shareOnWhatsApp(getStoreUrl(), `تصفّح منتجات ${s.name} واطلب عبر واتساب!`); }
         function shareStoreFacebook() { shareOnFacebook(getStoreUrl()); }
         function shareStoreTwitter() { const s = DB.getStore(); if (!s) return; shareOnTwitter(getStoreUrl(), `تصفّح منتجات ${s.name} واطلب عبر واتساب!`); }
@@ -627,10 +627,10 @@ window.open(sid ? `/store.html?id=${sid}` : '/store.html', '_blank'); }
         }
         function renderPlanPage() {
             const plan = Plans.get(currentPlan), sid = CloudDB.getMyStoreId() || '';
-            document.getElementById('currentPlanCard').innerHTML = `<div style="font-size:3rem;margin-bottom:8px;">💎</div><h2 style="color:var(--primary);margin-bottom:4px;">باقة ${plan.name}</h2><p style="color:var(--text-light);">${plan.maxProducts === 999 ? 'عدد غير محدود' : plan.maxProducts} منتجات • ${plan.maxImages} صور/منتج ${plan.coupons ? '• كوبونات' : ''}${plan.badge ? '' : '• بدون علامة UP2U Store'}</p>`;
+            document.getElementById('currentPlanCard').innerHTML = `<div style="font-size:3rem;margin-bottom:8px;">💎</div><h2 style="color:var(--primary);margin-bottom:4px;">باقة ${plan.name}</h2><p style="color:var(--text-light);">${plan.maxProducts === 999 ? 'عدد غير محدود' : plan.maxProducts} منتجات • ${plan.maxImages} صور/منتج ${plan.coupons ? '• كوبونات' : ''}${plan.badge ? '' : '• بدون علامة Beweble Store'}</p>`;
             const tiers = [
-                { id: 'free', color: '#6B7280', features: ['3 منتجات', 'صورة واحدة/منتج', 'سلة مشتريات', 'تقييمات عملاء', 'علامة "UP2U Store"'] },
-                { id: 'pro', color: '#4F46E5', features: ['20 منتج', '4 صور/منتج', 'كوبونات خصم', 'بدون علامة "UP2U Store"', 'جميع المميزات'], recommended: true },
+                { id: 'free', color: '#6B7280', features: ['3 منتجات', 'صورة واحدة/منتج', 'سلة مشتريات', 'تقييمات عملاء', 'علامة "Beweble Store"'] },
+                { id: 'pro', color: '#4F46E5', features: ['20 منتج', '4 صور/منتج', 'كوبونات خصم', 'بدون علامة "Beweble Store"', 'جميع المميزات'], recommended: true },
                 { id: 'business', color: '#059669', features: ['عدد غير محدود', '4 صور/منتج', 'جميع مميزات Pro', 'دعم أولوية', 'إحصائيات متقدمة'] }
             ];
             document.getElementById('plansGrid').innerHTML = tiers.map(t => {
