@@ -440,7 +440,7 @@ function generateWhatsAppInquiry(phone, storeName) {
   return `https://api.whatsapp.com/send?phone=${cp}&text=${encodeURIComponent(msg)}`;
 }
 function generateUpgradeWhatsApp(storeId, planName) {
-  const phone = (window.ADMIN_PHONE || '+966000000000').replace(/[^0-9+]/g, '');
+  const phone = (window.ADMIN_PHONE || '+96181112046').replace(/[^0-9+]/g, '');
   const msg = `السلام عليكم،\n\nأرغب بترقية متجري إلى باقة "${planName}".\n\nمعرّف المتجر: ${storeId}\n\nأرجو إفادتي بتفاصيل الدفع.\n\nشكراً!`;
   return `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
 }
@@ -466,7 +466,7 @@ function formatPrice(p, c) { return `${Number(p).toLocaleString('ar-SA')} ${c ||
 function getStoreUrl() {
   const origin = window.location.origin;
   const storeId = CloudDB.getMyStoreId();
-  return storeId ? `${origin}/s/${storeId}` : `${origin}/store`;
+  return storeId ? `${origin}store.html?id=${storeId}` : `${origin}store.html`;
 }
 function shareOnWhatsApp(url, text) { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank'); }
 function shareOnFacebook(url) { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank'); }
@@ -476,4 +476,25 @@ function copyToClipboard(text) {
 }
 
 // ---- Initialize Network Status ----
-NetworkStatus.init()
+// ---- Initialize Network Status ----
+NetworkStatus.init();
+
+function initStore() {
+  console.log("Store initialized");
+  
+  // تحميل السلة
+  if (typeof Cart !== "undefined") Cart.load();
+  
+  // تحميل المتجر (إذا موجود)
+  const store = DB.getStore();
+  if (store) {
+    console.log("Store loaded:", store);
+  }
+  
+  // مثال: عرض المنتجات (إذا عندك هالدوال)
+  if (typeof renderProducts === "function") renderProducts();
+  if (typeof updateUI === "function") updateUI();
+}
+
+// تشغيل عند فتح الصفحة
+document.addEventListener('DOMContentLoaded', initStore);
