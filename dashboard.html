@@ -529,7 +529,7 @@
         function updateStoreLink() { const s = DB.getStore(), box = document.getElementById('storeLinkBox'); if (s && s.name && s.phone) { box.style.display = 'flex'; document.getElementById('storeLink').value = getStoreUrl(); } else { box.style.display = 'none'; } }
         function copyLink() { copyToClipboard(document.getElementById('storeLink').value); }
         function previewStore() { const s = DB.getStore(); if (!s || !s.name) { showToast('احفظ الإعدادات أولاً', 'error'); return; } const sid = CloudDB.getMyStoreId();
-window.open(sid ? `store.html?id=${sid}` : '/store.html', '_blank'); }
+window.open(sid ? `store.html?id=${sid}` : 'store.html', '_blank'); }
         function shareStoreWhatsApp() { const s = DB.getStore(); if (!s) return; shareOnWhatsApp(getStoreUrl(), `تصفّح منتجات ${s.name} واطلب عبر واتساب!`); }
         function shareStoreFacebook() { shareOnFacebook(getStoreUrl()); }
         function shareStoreTwitter() { const s = DB.getStore(); if (!s) return; shareOnTwitter(getStoreUrl(), `تصفّح منتجات ${s.name} واطلب عبر واتساب!`); }
