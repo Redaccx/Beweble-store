@@ -68,7 +68,7 @@
             <a href="#" class="sidebar-link" data-section="stats" onclick="showSection('stats')">📊 الإحصائيات</a>
             <a href="#" class="sidebar-link" data-section="share" onclick="showSection('share')">📢 المشاركة</a>
             <a href="#" class="sidebar-link" data-section="plan" onclick="showSection('plan')">💎 باقتي</a>
-            <a href="#" class="sidebar-link" onclick="previewStore()">👁️ معاينة المتجر</a>
+            <a href="store.html" class="sidebar-link" onclick="previewStore()">👁️ معاينة المتجر</a>
         </nav>
         <div class="sidebar-footer">
             <div id="userEmailDisplay"
@@ -528,8 +528,22 @@
         }
         function updateStoreLink() { const s = DB.getStore(), box = document.getElementById('storeLinkBox'); if (s && s.name && s.phone) { box.style.display = 'flex'; document.getElementById('storeLink').value = getStoreUrl(); } else { box.style.display = 'none'; } }
         function copyLink() { copyToClipboard(document.getElementById('storeLink').value); }
-        function previewStore() { const s = DB.getStore(); if (!s || !s.name) { showToast('احفظ الإعدادات أولاً', 'error'); return; } const sid = CloudDB.getMyStoreId();
-window.open(sid ? `store.html?id=${sid}` : 'store.html', '_blank'); }
+     function previewStore() {
+    const s = DB.getStore();
+    if (!s || !s.name) return showToast('احفظ الإعدادات أولاً', 'error');
+    
+    const sid = Auth?.getUid?.() || CloudDB?.getMyStoreId?.();
+    if (!sid) return showToast('لا يوجد معرف للمتجر', 'error');
+    
+    const win = window.open("", "_blank"); // فتح فوري
+    
+    if (!win) {
+        showToast('المتصفح منع النافذة', 'error');
+        return;
+    }
+    
+    win.location.href = `store.html?id=${sid}`;
+}
         function shareStoreWhatsApp() { const s = DB.getStore(); if (!s) return; shareOnWhatsApp(getStoreUrl(), `تصفّح منتجات ${s.name} واطلب عبر واتساب!`); }
         function shareStoreFacebook() { shareOnFacebook(getStoreUrl()); }
         function shareStoreTwitter() { const s = DB.getStore(); if (!s) return; shareOnTwitter(getStoreUrl(), `تصفّح منتجات ${s.name} واطلب عبر واتساب!`); }
@@ -627,7 +641,7 @@ window.open(sid ? `store.html?id=${sid}` : 'store.html', '_blank'); }
         }
         function renderPlanPage() {
             const plan = Plans.get(currentPlan), sid = CloudDB.getMyStoreId() || '';
-            document.getElementById('currentPlanCard').innerHTML = `<div style="font-size:3rem;margin-bottom:8px;">💎</div><h2 style="color:var(--primary);margin-bottom:4px;">باقة ${plan.name}</h2><p style="color:var(--text-light);">${plan.maxProducts === 999 ? 'عدد غير محدود' : plan.maxProducts} منتجات • ${plan.maxImages} صور/منتج ${plan.coupons ? '• كوبونات' : ''}${plan.badge ? '' : '• بدون علامة Beweble Store'}</p>`;
+            document.getElementById('currentPlanCard').innerHTML = `<div style="font-size:3rem;margin-bottom:8px;">💎</div><h2 style="color:var(--primary);margin-bottom:4px;">باقة ${plan.name}</h2><p style="color:var(--text-light);">${plan.maxProducts === 999 ? 'عدد غير محدود' : plan.maxProducts} منتجات • ${plan.maxImages} صور/منتج ${plan.coupons ? '• كوبونات' : ''}${plan.badge ? '' : '• بدون علامة UP2U Store'}</p>`;
             const tiers = [
                 { id: 'free', color: '#6B7280', features: ['3 منتجات', 'صورة واحدة/منتج', 'سلة مشتريات', 'تقييمات عملاء', 'علامة "Beweble Store"'] },
                 { id: 'pro', color: '#4F46E5', features: ['20 منتج', '4 صور/منتج', 'كوبونات خصم', 'بدون علامة "Beweble Store"', 'جميع المميزات'], recommended: true },
